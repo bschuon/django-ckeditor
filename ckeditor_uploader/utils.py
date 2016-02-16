@@ -13,14 +13,19 @@ from django.utils.encoding import force_text
 
 # Non-image file icons, matched from top to bottom
 fileicons_path = '{0}/file-icons/'.format(getattr(settings, 'CKEDITOR_FILEICONS_PATH', '/static/ckeditor'))
-CKEDITOR_FILEICONS = getattr(settings, 'CKEDITOR_FILEICONS', [
-    ('\.pdf$', fileicons_path + 'pdf.png'),
-    ('\.doc$|\.docx$|\.odt$', fileicons_path + 'doc.png'),
-    ('\.txt$', fileicons_path + 'txt.png'),
-    ('\.ppt$', fileicons_path + 'ppt.png'),
-    ('\.xls$', fileicons_path + 'xls.png'),
-    ('.*', fileicons_path + 'file.png'),  # Default
-])
+# Get icons from settings and override the ckeditor icons with the ones from settings,
+# if the same file type is entered in the settings.  By putting the override icons first, 
+# they will get chosen before the corresponding ckeditor icon.
+override_icons = getattr(settings, 'CKEDITOR_FILEICONS', [])
+ckeditor_icons =     [
+        ('\.pdf$', fileicons_path + 'pdf.png'),
+        ('\.doc$|\.docx$|\.odt$', fileicons_path + 'doc.png'),
+        ('\.txt$', fileicons_path + 'txt.png'),
+        ('\.ppt$', fileicons_path + 'ppt.png'),
+        ('\.xls$', fileicons_path + 'xls.png'),
+        ('.*', fileicons_path + 'file.png'),  # Default
+    ]
+CKEDITOR_FILEICONS = override_icons + ckeditor_icons
 
 
 class NotAnImageException(Exception):
